@@ -1,0 +1,97 @@
+# .github/workflows/ci.yml
+name: CI Workflow
+
+on:
+  push:
+    branches: [ main, feature/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  style-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: env.yml
+          activate-environment: fsds
+          use-mamba: true
+      - name: Run Flake8
+        run: |
+          pip install flake8
+          flake8 src/
+
+
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: env.yml
+          activate-environment: fsds
+          use-mamba: true
+      - name: Install package in dev mode
+        run: |
+          pip install -e .
+          pip install pytest
+      - name: Run unit tests
+        run: |
+          python -m unittest discover tests/unit_tests/  # Run the unit tests
+
+      - name: Run functional tests
+        run: |
+          python -m unittest discover tests/functional_test/  # Run the functional tests
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: env.yml
+          activate-environment: fsds
+          use-mamba: true
+      - name: Install tree
+        run: sudo apt-get install tree
+      - name: Show directory tree before build
+        run: tree
+      - name: Build package
+        run: |
+          pip install build
+          python -m build
+      - name: Show directory tree after build
+        run: tree
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: housinglib-artifacts
+          path: |
+            dist/
+            env.yml
+
+  install:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: housinglib-artifacts
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: env.yml
+          activate-environment: fsds
+          use-mamba: true
+      - name: Install built package
+        run: |
+          pip install dist/*.whl
+      - name: Run workflow scripts with logging
+        run: |
+          python your_script.py --log_level DEBUG
