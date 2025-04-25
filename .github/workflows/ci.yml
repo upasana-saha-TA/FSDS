@@ -36,7 +36,8 @@ jobs:
           use-mamba: true
       - name: Initialize conda
         run: |
-          conda init
+          echo "Initializing Conda..."
+          source $HOME/miniconda3/etc/profile.d/conda.sh || source $HOME/miniconda/etc/profile.d/conda.sh
           conda activate fsds  # Now activate the environment
       - name: Install dependencies
         run: |
