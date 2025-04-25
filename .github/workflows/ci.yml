@@ -36,8 +36,15 @@ jobs:
           use-mamba: true
       - name: Initialize conda
         run: |
-          echo "Initializing Conda..."
-          source $HOME/miniconda3/etc/profile.d/conda.sh || source $HOME/miniconda/etc/profile.d/conda.sh
+          # Try to source the conda.sh file from the correct location
+          if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+            source $HOME/miniconda3/etc/profile.d/conda.sh
+          elif [ -f "$HOME/miniconda/etc/profile.d/conda.sh" ]; then
+            source $HOME/miniconda/etc/profile.d/conda.sh
+          else
+            echo "Conda initialization file not found!"
+            exit 1
+          fi
           conda activate fsds  # Now activate the environment
       - name: Install dependencies
         run: |
