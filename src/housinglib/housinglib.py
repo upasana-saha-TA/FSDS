@@ -229,7 +229,6 @@ def load_train_data(project_path):
     """
     processed_data_path = op.join(project_path, "..", "data", "processed")
 
-
     train_set = pd.read_csv(os.path.join(processed_data_path, "train_set.csv"))
     housing_prepared = train_set.drop("median_house_value", axis=1)
     housing_labels = train_set["median_house_value"]
@@ -292,7 +291,8 @@ def desc_tree(housing_prepared, housing_labels):
     tree_rmse = np.sqrt(tree_mse)
     tree_mae = mean_absolute_error(housing_labels, housing_predictions)
     logger.info("Trained decision tree regression model.")
-    logger.info(f"Decision tree reg model metrices: rmse: {round(tree_rmse, 4)}, mae: {round(tree_mae, 4)}")
+    logger.info(f"Decision tree reg model metrices: rmse: {round(tree_rmse, 4)},\
+                                        mae: {round(tree_mae, 4)}")
 
     return tree_reg
 
