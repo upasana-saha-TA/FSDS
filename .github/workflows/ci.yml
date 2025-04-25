@@ -34,12 +34,17 @@ jobs:
           environment-file: env.yml
           activate-environment: fsds
           use-mamba: true
-      - name: Install package in dev mode
+      - name: Initialize conda
         run: |
-          conda activate fsds  # Activate the environment
-          pip install -e .
-          pip install pandas
-          pip install pytest
+          source $HOME/miniconda3/etc/profile.d/conda.sh  # Initialize conda for use
+          conda activate fsds  # Now activate the environment
+      - name: Install dependencies
+        run: |
+          conda install pandas  # Ensure pandas is installed via conda
+          pip install pytest  # Ensure pytest is installed
+      - name: Verify installed packages
+        run: |
+          conda list  # Verify that pandas and other packages are installed
       - name: Run unit tests
         run: |
           python -m unittest discover tests/unit_tests/  # Run the unit tests
