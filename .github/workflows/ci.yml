@@ -36,7 +36,9 @@ jobs:
           use-mamba: true
       - name: Install package in dev mode
         run: |
+          conda activate fsds  # Activate the environment
           pip install -e .
+          pip install pandas
           pip install pytest
       - name: Run unit tests
         run: |
