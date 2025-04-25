@@ -34,18 +34,16 @@ jobs:
           environment-file: env.yml
           activate-environment: fsds
           use-mamba: true
-      - name: Initialize conda
+      - name: Check Conda Installation
         run: |
-          # Try to source the conda.sh file from the correct location
-          if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
-            source $HOME/miniconda3/etc/profile.d/conda.sh
-          elif [ -f "$HOME/miniconda/etc/profile.d/conda.sh" ]; then
-            source $HOME/miniconda/etc/profile.d/conda.sh
-          else
-            echo "Conda initialization file not found!"
-            exit 1
-          fi
-          conda activate fsds  # Now activate the environment
+          echo "Checking Conda installation..."
+          which conda  # This should return the path to the conda binary if it's installed
+          conda --version  # This should show the version of conda
+      - name: Initialize Conda
+        run: |
+          echo "Initializing Conda..."
+          # Attempt to directly activate the environment without sourcing conda.sh manually
+          conda activate fsds  # Conda should be available if installed correctly
       - name: Install dependencies
         run: |
           conda install pandas  # Ensure pandas is installed via conda
