@@ -42,8 +42,12 @@ jobs:
       - name: Initialize Conda
         run: |
           echo "Initializing Conda..."
-          # Attempt to directly activate the environment without sourcing conda.sh manually
-          conda activate fsds  # Conda should be available if installed correctly
+          # Run conda init
+          conda init bash
+          # Source the conda.sh file to initialize conda
+          source $HOME/miniconda3/etc/profile.d/conda.sh || source $HOME/miniconda/etc/profile.d/conda.sh
+          # Now activate the environment
+          conda activate fsds
       - name: Install dependencies
         run: |
           conda install pandas  # Ensure pandas is installed via conda
