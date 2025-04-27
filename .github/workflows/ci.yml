@@ -51,11 +51,11 @@ jobs:
           conda list  # Verify that pandas and other packages are installed
       - name: Run unit tests
         run: |
-          python -m unittest discover tests/unit_tests/  # Run the unit tests
+          pytest tests/unit_tests/  # Run the unit tests
 
       - name: Run functional tests
         run: |
-          python -m unittest discover tests/functional_test/  # Run the functional tests
+          pytest tests/functional_test/  # Run the functional tests
 
   build:
     runs-on: ubuntu-latest
