@@ -86,7 +86,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@refs/tags/v2.2.4
         with:
-          name: housinglib-artifacts
+          name: housinglib_artifacts
           path: |
             dist/
             env.yml
@@ -100,7 +100,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2.1.1
         with:
-          name: housinglib-artifacts
+          name: housinglib_artifacts
       - name: Setup Miniforge
         uses: conda-incubator/setup-miniconda@v2
         with:
