@@ -42,10 +42,7 @@ jobs:
       - name: Install dependencies
         run: |
           echo "Installing dependencies..."
-          conda install --file requirements.txt  # Assuming you have a requirements.txt for dependencies
-          pip install pytest  # Ensure pytest is installed
-      - name: Install dependencies
-        run: |
+          python -m pip install -r requirements.txt
           pip install pandas
           pip install pytest  # Ensure pytest is installed
       - name: Verify installed packages
