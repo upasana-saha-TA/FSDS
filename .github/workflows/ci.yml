@@ -43,8 +43,9 @@ jobs:
         run: |
           echo "Installing dependencies..."
           python -m pip install -r requirements.txt
-          pip install pandas
-          pip install pytest  # Ensure pytest is installed
+      - name: Install housinglib package
+        run: |
+          pip install .
       - name: Verify installed packages
         run: |
           conda list  # Verify that pandas and other packages are installed
