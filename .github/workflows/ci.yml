@@ -55,7 +55,7 @@ jobs:
 
       - name: Run functional tests
         run: |
-          pytest tests/functional_test/  # Run the functional tests
+          pytest tests/functional_tests/  # Run the functional tests
 
   build:
     runs-on: ubuntu-latest
