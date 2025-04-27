@@ -84,7 +84,7 @@ jobs:
       - name: Show directory tree after build
         run: tree dist/
       - name: Upload artifacts
-        uses: actions/upload-artifact@e6b4c5d61e3a7b4d2b81c504e5ff1dd6fa06f0b7
+        uses: actions/upload-artifact@v2
         with:
           name: housinglib-artifacts
           path: |
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@8b0558c5de46f7b6fbcc66b9e2f6431db24626e2
+        uses: actions/download-artifact@v2
         with:
           name: housinglib-artifacts
       - name: Setup Miniforge
