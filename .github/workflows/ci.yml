@@ -83,28 +83,28 @@ jobs:
           python -m build
       - name: Show directory tree after build
         run: tree dist/
-      # - name: Upload artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: housinglib_artifacts
+          path: |
+            dist/
+            env.yml
+      # - name: Upload housinglib wheel artifact
       #   uses: actions/upload-artifact@refs/tags/v2.2.4
       #   with:
-      #     name: housinglib_artifacts
-      #     path: |
-      #       dist/
-      #       env.yml
-      - name: Upload housinglib wheel artifact
-        uses: actions/upload-artifact@refs/tags/v2.2.4
-        with:
-          name: housinglib_artifact_wheel
-          path: dist/housinglib-0.0.1-py3-none-any.whl
-      - name: Upload housinglib tarball artifact
-        uses: actions/upload-artifact@refs/tags/v2.2.4
-        with:
-          name: housinglib_artifact_tar
-          path: dist/housinglib-0.0.1.tar.gz
-      - name: Upload env.yml artifact
-        uses: actions/upload-artifact@refs/tags/v2.2.4
-        with:
-          name: environment_file
-          path: env.yml
+      #     name: housinglib_artifact_wheel
+      #     path: dist/housinglib-0.0.1-py3-none-any.whl
+      # - name: Upload housinglib tarball artifact
+      #   uses: actions/upload-artifact@refs/tags/v2.2.4
+      #   with:
+      #     name: housinglib_artifact_tar
+      #     path: dist/housinglib-0.0.1.tar.gz
+      # - name: Upload env.yml artifact
+      #   uses: actions/upload-artifact@refs/tags/v2.2.4
+      #   with:
+      #     name: environment_file
+      #     path: env.yml
 
 
   install:
@@ -114,7 +114,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2.1.1
+        uses: actions/download-artifact@v4
         with:
           name: housinglib_artifacts
       - name: Setup Miniforge
