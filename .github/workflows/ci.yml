@@ -57,6 +57,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    needs: [style-test, unit-test]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Miniforge
