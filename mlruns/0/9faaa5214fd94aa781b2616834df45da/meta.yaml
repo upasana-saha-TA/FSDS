@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/upasana.saha/Documents/FSDS/mlruns/0/9faaa5214fd94aa781b2616834df45da/artifacts
+end_time: 1746467896469
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 9faaa5214fd94aa781b2616834df45da
+run_name: Model Training
+run_uuid: 9faaa5214fd94aa781b2616834df45da
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746466808936
+status: 3
+tags: []
+user_id: upasana.saha

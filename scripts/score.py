@@ -1,4 +1,3 @@
-
 import argparse
 import json
 import logging
@@ -6,39 +5,8 @@ import logging.config
 import os
 import os.path as op
 import pickle
-
+import mlflow
 import housinglib as hlb
-
-logger = logging.getLogger(__name__)
-
-parser = argparse.ArgumentParser(description="data folder path")
-parser.add_argument("--model_path", nargs="?")
-parser.add_argument("--data_path", nargs="?")
-parser.add_argument("--res_path", nargs="?")
-parser.add_argument("--log_level", nargs="?")
-parser.add_argument("--log_path", nargs="?")
-parser.add_argument("--no_console_log", nargs="?")
-args = parser.parse_args()
-
-if args.log_level is None:
-    log_level = "DEBUG"
-else:
-    log_level = args.log_level
-
-if args.log_path is None:
-    log_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "..", "logs", "score.log"
-    )
-else:
-    log_file = args.log_path
-
-log_dir = os.path.dirname(log_file)
-os.makedirs(log_dir, exist_ok=True)
-
-if args.no_console_log is None:
-    no_console_log = True
-else:
-    no_console_log = args.no_console_log
 
 LOGGING_DEFAULT_CONFIG = {
     "version": 1,
@@ -66,7 +34,7 @@ def configure_logger(
     logger = logger or logging.getLogger()
 
     if log_file or console:
-        for hdlr in logger.handlers:
+        for hdlr in logger.handlers[:]:
             logger.removeHandler(hdlr)
 
         if log_file:
@@ -81,42 +49,66 @@ def configure_logger(
 
     return logger
 
+def run(model_path=None, data_path=None, res_path=None, log_path=None, log_level="DEBUG", no_console_log=True, use_mlflow=False, nested=False):
+    HERE = op.dirname(op.abspath(__file__))
 
-HERE = op.dirname(op.abspath(__file__))
+    model_path = model_path or op.join(HERE, "..", "artifacts", "model_pickle")
+    res_path = res_path or op.join(HERE, "..", "artifacts")
+    data_path = data_path or op.join(HERE, "..", "data", "processed")
+    log_path = log_path or os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "logs", "score.log"
+    )
 
-logger = configure_logger(
-    log_file=log_file, console=no_console_log, log_level=log_level
-)
+    os.makedirs(op.dirname(log_path), exist_ok=True)
+    os.makedirs(res_path, exist_ok=True)
 
-if args.model_path is None:
-    path = op.join(HERE, "..", "artifacts")
-    with open(path + "/model_pickle", "rb") as f:
+    logger = configure_logger(log_file=log_path, console=True, log_level=log_level)
+    logger.info("Starting model scoring...")
+
+    with open(model_path, "rb") as f:
         final_model = pickle.load(f)
-else:
-    with open(args.model_path, "rb") as f:
-        final_model = pickle.load(f)
+    logger.info("Loaded trained model.")
 
-if args.res_path is None:
-    path3 = op.join(HERE, "..", "artifacts")
-else:
-    path3 = args.res_path
+    test_data, imputer = hlb.load_test_data(project_path=HERE)
+    logger.info("Loaded test data.")
 
-if args.data_path is None:
-    path2 = op.join(HERE, "..", "data", "processed")
-else:
-    path2 = args.data_path
+    final_mse, final_rmse = hlb.model_score(final_model, test_data, imputer)
+    logger.info(f"Evaluation completed. MSE: {final_mse}, RMSE: {final_rmse}")
 
+    results = {"Mean Square Error": final_mse, "Root mean square error": final_rmse}
+    results_path = os.path.join(res_path, "results.txt")
+    with open(results_path, "w") as f:
+        f.write(json.dumps(results))
+    logger.info(f"Results saved to {results_path}")
 
-test_data, imputer = hlb.load_test_data(project_path=HERE)
-logger.info("Loaded test data.")
+    if use_mlflow:
+        with mlflow.start_run(nested=nested, run_name="Model Scoring") as scoring_run:
+            mlflow.log_param("model_path", model_path)
+            mlflow.log_param("data_path", data_path)
+            mlflow.log_metric("MSE", final_mse)
+            mlflow.log_metric("RMSE", final_rmse)
+            mlflow.log_artifact(results_path, artifact_path="metrics")
+            logger.info(f"Scoring run ID: {scoring_run.info.run_id}")
 
-final_mse, final_rmse = hlb.model_score(final_model, test_data, imputer)
-logger.info("MSE and RMSE calculated.")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Score the trained model")
+    parser.add_argument("--model_path", nargs="?", default=None)
+    parser.add_argument("--data_path", nargs="?", default=None)
+    parser.add_argument("--res_path", nargs="?", default=None)
+    parser.add_argument("--log_level", nargs="?", default="DEBUG")
+    parser.add_argument("--log_path", nargs="?", default=None)
+    parser.add_argument("--no_console_log", nargs="?", default="True")
+    parser.add_argument("--mlflow", action="store_true", help="Enable MLflow tracking")
+    parser.add_argument("--mlflow-nested", action="store_true", help="Enable nested MLflow run")
 
-results = {"Mean Square Error": final_mse, "Root mean square error": final_rmse}
-
-with open(path3 + "/results.txt", "w") as convert_file:
-    convert_file.write(json.dumps(results))
-logger.info("Results are stored in the artifacts folder.")
-
-# logs added
+    args = parser.parse_args()
+    run(
+        model_path=args.model_path,
+        data_path=args.data_path,
+        res_path=args.res_path,
+        log_path=args.log_path,
+        log_level=args.log_level,
+        no_console_log=args.no_console_log.lower() == "true",
+        use_mlflow=args.mlflow,
+        nested=args.mlflow_nested,
+    )
