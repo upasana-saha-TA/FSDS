@@ -68,7 +68,7 @@ def run(input_path=None, output_path=None, log_path=None, log_level="DEBUG", no_
         logger.info("Splitting training data into X_train and y_train.")
 
         final_model = hlb.random_forest(housing_prepared, housing_labels)
-        logger.info("Best model trained.")
+        logger.info(f"Best model trained {final_model}.")
 
         with open(op.join(ARTIFACT_PATH, "model_pickle"), "wb") as f:
             pickle.dump(final_model, f)
