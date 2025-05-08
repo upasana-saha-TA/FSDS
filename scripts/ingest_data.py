@@ -60,7 +60,7 @@ def run(path=None, log_path=None, log_level="DEBUG", no_console_log=True, use_ml
     logger.info("Starting data ingestion process...")
 
     if use_mlflow:
-        with mlflow.start_run(nested=nested, run_name="Model Training") as ingestion_run:
+        with mlflow.start_run(nested=nested, run_name="Data Ingestion") as ingestion_run:
             logger.info(f"Ingestion run ID: {ingestion_run.info.run_id}")
             mlflow.log_param("data_path", HOUSING_PATH)
             hlb.load_data(HOUSING_PATH)

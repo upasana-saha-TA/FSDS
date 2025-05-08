@@ -83,6 +83,7 @@ def run(input_path=None, output_path=None, log_path=None, log_level="DEBUG", no_
             mlflow.log_param("model_type", "RandomForest")
             logger.info(f"Training run ID: {training_run.info.run_id}")
             final_model = train_model()
+            mlflow.sklearn.log_model(final_model, "model")
             mlflow.log_artifact(op.join(ARTIFACT_PATH, "model_pickle"), artifact_path="model")
     else:
         final_model = train_model()
