@@ -1,0 +1,14 @@
+LICENSE
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+src/housinglib/housinglib.egg-info/PKG-INFO
+src/housinglib/housinglib.egg-info/SOURCES.txt
+src/housinglib/housinglib.egg-info/dependency_links.txt
+src/housinglib/housinglib.egg-info/top_level.txt
+src/housinglib/housinglib.py
+src/housinglib/housinglib.egg-info/PKG-INFO
+src/housinglib/housinglib.egg-info/SOURCES.txt
+src/housinglib/housinglib.egg-info/dependency_links.txt
+src/housinglib/housinglib.egg-info/top_level.txt

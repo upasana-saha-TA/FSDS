@@ -1,48 +1,11 @@
-import argparse
 import logging
 import logging.config
 import os
 import os.path as op
 import sys
-
+import mlflow
 import housinglib as hlb
 
-HERE1 = op.dirname(op.abspath(__file__))
-lib_path = op.join(HERE1, "..")
-sys.path.append(lib_path)
-
-parser = argparse.ArgumentParser(description="data folder path")
-parser.add_argument("--path", nargs="?")
-parser.add_argument("--log_level", nargs="?")
-parser.add_argument("--log_path", nargs="?")
-parser.add_argument("--no_console_log", nargs="?")
-args = parser.parse_args()
-
-if args.path is None:
-    HERE = op.dirname(op.abspath(__file__))
-    HOUSING_PATH = op.join(HERE, "..", "data", "raw")
-else:
-    HOUSING_PATH = args.path
-if args.log_level is None:
-    log_level = "DEBUG"
-else:
-    log_level = args.log_level
-
-if args.log_path is None:
-    log_file = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "..", "logs", "ingest_data.log"
-    )
-
-else:
-    log_file = args.log_path
-
-log_dir = os.path.dirname(log_file)
-os.makedirs(log_dir, exist_ok=True)
-
-if args.no_console_log is None:
-    no_console_log = True
-else:
-    no_console_log = False
 LOGGING_DEFAULT_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -69,7 +32,7 @@ def configure_logger(
     logger = logger or logging.getLogger()
 
     if log_file or console:
-        for hdlr in logger.handlers:
+        for hdlr in logger.handlers[:]:
             logger.removeHandler(hdlr)
 
         if log_file:
@@ -84,13 +47,47 @@ def configure_logger(
 
     return logger
 
+def run(path=None, log_path=None, log_level="DEBUG", no_console_log=True, use_mlflow=False, nested=False):
+    HERE = op.dirname(op.abspath(__file__))
+    HOUSING_PATH = path or op.join(HERE, "..", "data", "raw")
+    log_file = log_path or os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "logs", "ingest_data.log"
+    )
 
-logger = configure_logger(
-    log_file=log_file, console=no_console_log, log_level=log_level
-)
+    os.makedirs(op.dirname(log_file), exist_ok=True)
+    logger = configure_logger(log_file=log_file, console=True, log_level=log_level)
 
-hlb.load_data(HOUSING_PATH)
+    logger.info("Starting data ingestion process...")
 
-hlb.data_prep(HOUSING_PATH, project_path=HERE)
+    if use_mlflow:
+        with mlflow.start_run(nested=nested, run_name="Data Ingestion") as ingestion_run:
+            logger.info(f"Ingestion run ID: {ingestion_run.info.run_id}")
+            mlflow.log_param("data_path", HOUSING_PATH)
+            hlb.load_data(HOUSING_PATH)
+            hlb.data_prep(HOUSING_PATH, project_path=HERE)
+    else:
+        hlb.load_data(HOUSING_PATH)
+        hlb.data_prep(HOUSING_PATH, project_path=HERE)
 
-# logs added
+    logger.info("Data ingestion and preparation completed.")
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Ingest housing data")
+    parser.add_argument("--path", nargs="?", default=None)
+    parser.add_argument("--log_level", nargs="?", default="DEBUG")
+    parser.add_argument("--log_path", nargs="?", default=None)
+    parser.add_argument("--no_console_log", nargs="?", default="True")
+    parser.add_argument("--mlflow", action="store_true", help="Enable MLflow tracking")
+    parser.add_argument("--mlflow-nested", action="store_true", help="Enable nested MLflow run")
+
+    args = parser.parse_args()
+    run(
+        path=args.path,
+        log_path=args.log_path,
+        log_level=args.log_level,
+        no_console_log=args.no_console_log.lower() == "true",
+        use_mlflow=args.mlflow,
+        nested=args.mlflow_nested,
+    )
