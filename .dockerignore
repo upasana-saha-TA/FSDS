@@ -1,0 +1,20 @@
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Git and version control
+.git/
+.gitignore
+
+# Notebooks and data
+*.ipynb
+
+# ML runs or temporary folders
+mlruns/
+temp/
+*.log
+
+# OS or editor files
+.DS_Store
+*.swp
