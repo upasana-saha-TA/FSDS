@@ -2,13 +2,13 @@
 name = "housinglib"
 version = "0.0.1"
 description = "Housing Price Prediction Code Library"
-authors = [{name = "Upasana Saha"}]
+authors = [{ name = "Upasana Saha" }]
 readme = "README.md"
 requires-python = ">=3.7"
 
 [tool.setuptools]
 py-modules = ["housinglib"]
-package-dir = {"" = "src"}
+package-dir = { "housinglib" = "src/housinglib" }
 
 [tool.coverage.run]
 source = ["src"]

@@ -48,10 +48,8 @@ coverage.xml
 # VSCode
 .vscode/
 
-# Logs, data, and artifacts — files inside are ignored by inner .gitignore
+# Logs — files inside are ignored by inner .gitignore
 logs/
-artifacts/
-data/
 
 # dotenv environment variables
 .env
