@@ -5,9 +5,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Install only system dependencies required by your libraries
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
- && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
 # Copy  requirements and install dependencies
 COPY requirements.txt .
