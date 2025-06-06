@@ -79,8 +79,11 @@ def data_drift(path=None, log_path=None, log_level="DEBUG", no_console_log=True)
     report.run(reference_data=refer_data, current_data=input_data)
 
     # Save HTML report
-    report_path = os.path.join(HERE, "..", "reports", "drift_report.html")
-    report.save_html(report_path)
+    report_html_path = os.path.join(HERE, "..", "reports", "drift_report.html")
+    report_json_path = os.path.join(HERE, "..", "reports", "drift_report.json")
+
+    report.save_html(report_html_path)
+    report.save_json(report_json_path)
 
     # Extract drift result
     results = report.as_dict()
