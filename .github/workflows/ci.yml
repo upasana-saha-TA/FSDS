@@ -129,6 +129,7 @@ jobs:
       - name: Install requirements
         run: |
           pip install -r requirements.txt
+          pip install evidently
           pip install .  # install housinglib if not already
 
       - name: Run drift check
