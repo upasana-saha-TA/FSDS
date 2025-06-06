@@ -1,3 +1,4 @@
+evidently==0.4.8
 matplotlib==3.8.2
 mlflow==2.22.0
 numpy==1.26.2
