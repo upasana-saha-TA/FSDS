@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: housing-app-pod
+spec:
+  containers:
+  - name: housing-app
+    image: 435141881759.dkr.ecr.ap-southeast-1.amazonaws.com/fsds_housinglib:latest
+    imagePullPolicy: IfNotPresent
+    command: ["python", "-u", "scripts/inference.py", "--no_console_log=False"]
+  restartPolicy: Never
+  tolerations:
+  - key: "CriticalAddonsOnly"
+    operator: "Exists"
+    effect: NoSchedule
