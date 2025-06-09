@@ -14,8 +14,14 @@ The following techniques have been used:
  - Multiple sampling techinuqies are evaluated. The data set is split into train and test.
  - All the above said modelling techniques are tried and evaluated. The final metric used to evaluate is mean squared error.
 
-## To excute the script
+## To excute the individual scripts
+```bash
 python < scriptname.py >
+```
+## To excute the entire flow through main script:
+```bash
+python scripts/main.py
+```
 
 ## Docker Deployment
 
