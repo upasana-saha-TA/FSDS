@@ -9,6 +9,10 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Copy your wheel and install it
+COPY housinglib-0.0.1-py3-none-any.whl .
+RUN pip install --no-cache-dir --prefix=/install housinglib-0.0.1-py3-none-any.whl
+
 # Install Python dependencies in a virtualenv
 COPY requirements.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
@@ -28,7 +32,6 @@ COPY artifacts/model /app/artifacts/model
 # Copy only necessary code and assets
 COPY scripts/inference.py ./scripts/inference.py
 COPY data/processed/test_set.csv ./test_set.csv
-COPY src/housinglib ./src/housinglib
 
 ENV PYTHONPATH=/app/src
 ENV MODEL_URI=/app/artifacts/model
