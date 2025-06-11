@@ -110,4 +110,33 @@ jobs:
           python scripts/ingest_data.py --log_level DEBUG
           python scripts/train.py --log_level DEBUG
           python scripts/score.py --log_level DEBUG
+  drift-check:
+    runs-on: ubuntu-latest
+    needs: install  # Ensure it's run after successful install
+    if: success()
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Miniforge
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: env.yml
+          activate-environment: fsds
+          use-mamba: true
+
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+          pip install .  # install housinglib if not already
+
+      - name: Run drift check
+        run: |
+          python scripts/monitoring.py --log_level DEBUG --no_console_log False
+
+      - name: Upload drift report
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: reports/drift_report.html
+
 
